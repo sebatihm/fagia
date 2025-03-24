@@ -19,7 +19,7 @@ impl MigrationTrait for Migration {
                     .col(string(Donator::lastname_m).not_null())
                     .col(string(Donator::phone).not_null())
                     .col(string(Donator::organization_name).not_null())
-                    .col(string(Donator::credentials_id).not_null())
+                    .col(integer(Donator::credentials_id).not_null())
                     .foreign_key(
                             ForeignKey::create()
                                 .name("fk-credentials-donator-id")

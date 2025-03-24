@@ -22,7 +22,7 @@ impl MigrationTrait for Migration {
                     .col(string(Benefactor::legal_name).not_null())
                     .col(string(Benefactor::NIF).not_null().unique_key())
                     .col(date(Benefactor::foundation_date).not_null())
-                    .col(string(Benefactor::credentials_id).not_null())
+                    .col(integer(Benefactor::credentials_id).not_null())
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-credentials-donator-id")
