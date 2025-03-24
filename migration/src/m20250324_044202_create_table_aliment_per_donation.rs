@@ -14,6 +14,11 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(integer(AlimentPerDonation::id_aliments).not_null())
                     .col(integer(AlimentPerDonation::id_donation).not_null())
+                    .primary_key(
+                        Index::create()
+                            .col(AlimentPerDonation::id_aliments)
+                            .col(AlimentPerDonation::id_donation),
+                    )
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-aliment-donation")

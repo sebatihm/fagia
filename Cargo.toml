@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 
-#entity = { path = "entity" }
+entity = { path = "entity" }
 migration = { path = "migration" } 
 
 serde = { version = "1.0.218", features = ["derive"] }

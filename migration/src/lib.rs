@@ -15,8 +15,8 @@ impl MigratorTrait for Migrator {
     fn migrations() -> Vec<Box<dyn MigrationTrait>> {
         vec![
             Box::new(m20220101_000001_create_table::Migration),
-            Box::new(m20250323_041446_create_table_donator::Migration),
             Box::new(m20250323_044314_create_table_credentials::Migration),
+            Box::new(m20250323_041446_create_table_donator::Migration),
             Box::new(m20250323_045440_create_table_benefactor::Migration),
             Box::new(m20250324_041504_create_table_aliments::Migration),
             Box::new(m20250324_042935_create_table_donation::Migration),
