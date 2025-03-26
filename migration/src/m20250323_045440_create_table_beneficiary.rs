@@ -12,21 +12,21 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(Benefactor::Table)
+                    .table(Beneficiary::Table)
                     .if_not_exists()
-                    .col(pk_auto(Benefactor::Id))
-                    .col(string(Benefactor::representant_name).not_null())
-                    .col(string(Benefactor::representant_lastname_f).not_null())
-                    .col(string(Benefactor::representant_lastname_m).not_null())
-                    .col(string(Benefactor::phone).not_null())
-                    .col(string(Benefactor::legal_name).not_null())
-                    .col(string(Benefactor::NIF).not_null().unique_key())
-                    .col(date(Benefactor::foundation_date).not_null())
-                    .col(integer(Benefactor::credentials_id).not_null())
+                    .col(pk_auto(Beneficiary::Id))
+                    .col(string(Beneficiary::representant_name).not_null())
+                    .col(string(Beneficiary::representant_lastname_f).not_null())
+                    .col(string(Beneficiary::representant_lastname_m).not_null())
+                    .col(string(Beneficiary::phone).not_null())
+                    .col(string(Beneficiary::legal_name).not_null())
+                    .col(string(Beneficiary::NIF).not_null().unique_key())
+                    .col(date(Beneficiary::foundation_date).not_null())
+                    .col(integer(Beneficiary::credentials_id).not_null())
                     .foreign_key(
                         ForeignKey::create()
                             .name("fk-credentials-benefactor-id")
-                            .from(Benefactor::Table, Benefactor::credentials_id)
+                            .from(Beneficiary::Table, Beneficiary::credentials_id)
                             .to(super::m20250323_044314_create_table_credentials::Credentials::Table, super::m20250323_044314_create_table_credentials::Credentials::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade)
@@ -39,13 +39,13 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
 
         manager
-            .drop_table(Table::drop().table(Benefactor::Table).to_owned())
+            .drop_table(Table::drop().table(Beneficiary::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum Benefactor {
+pub enum Beneficiary {
     Table,
     Id,
     representant_name,

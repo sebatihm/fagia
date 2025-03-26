@@ -44,5 +44,5 @@ pub enum Credentials {
 #[derive(Iden, EnumIter)]
 pub enum r#type {
     DONATOR,
-    BENEFACTOR
+    BENEFICIARY
 }

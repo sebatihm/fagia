@@ -2,7 +2,7 @@
 
 pub use super::aliment_per_donation::Entity as AlimentPerDonation;
 pub use super::aliments::Entity as Aliments;
-pub use super::benefactor::Entity as Benefactor;
+pub use super::beneficiary::Entity as Beneficiary;
 pub use super::credentials::Entity as Credentials;
 pub use super::donation::Entity as Donation;
 pub use super::donator::Entity as Donator;

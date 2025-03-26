@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .name("fk-donation-benefactor")
                             .from(Donation::Table, Donation::id_benefactor)
-                            .to(super::m20250323_045440_create_table_benefactor::Benefactor::Table, super::m20250323_045440_create_table_benefactor::Benefactor::Id)
+                            .to(super::m20250323_045440_create_table_beneficiary::Beneficiary::Table, super::m20250323_045440_create_table_beneficiary::Beneficiary::Id)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade)   
                     )

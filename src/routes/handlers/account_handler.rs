@@ -58,7 +58,7 @@ pub async fn register_donator(app_state: web::Data<AppState>, register_json: web
 
 
 #[derive(Serialize, Deserialize)]
-struct RegisterBenefactorModel{
+struct RegisterBeneficiaryModel{
     representant_name: String,
     representant_lastname_f: String,
     representant_lastname_m: String,
@@ -71,8 +71,8 @@ struct RegisterBenefactorModel{
     r_type: entity::sea_orm_active_enums::RType
 }
 
-#[post("/register-benefactor")]
-pub async fn register_benefactor(app_state: web::Data<AppState>,register_json: web::Json<RegisterBenefactorModel>) -> impl Responder{
+#[post("/register-beneficiary")]
+pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: web::Json<RegisterBeneficiaryModel>) -> impl Responder{
     
     let credentials_model = entity::credentials::ActiveModel{ 
         email: Set(register_json.email.clone()), 
@@ -81,7 +81,7 @@ pub async fn register_benefactor(app_state: web::Data<AppState>,register_json: w
         ..Default::default()
     }.insert(&app_state.db).await.unwrap();
 
-    let benefactor_model = entity::benefactor::ActiveModel{ 
+    let beneficiary_model = entity::beneficiary::ActiveModel{ 
         representant_name: Set(register_json.representant_name.clone()), 
         representant_lastname_f: Set(register_json.representant_lastname_f.clone()), 
         representant_lastname_m: Set(register_json.representant_lastname_m.clone()), 
@@ -96,7 +96,7 @@ pub async fn register_benefactor(app_state: web::Data<AppState>,register_json: w
 
     return HttpResponse::Ok()
         .status(StatusCode::from_u16(201).unwrap())
-        .json(benefactor_model);
+        .json(beneficiary_model);
 
 }
 

@@ -17,13 +17,13 @@ pub enum Relation {
     #[sea_orm(has_many = "super::aliment_per_donation::Entity")]
     AlimentPerDonation,
     #[sea_orm(
-        belongs_to = "super::benefactor::Entity",
+        belongs_to = "super::beneficiary::Entity",
         from = "Column::IdBenefactor",
-        to = "super::benefactor::Column::Id",
+        to = "super::beneficiary::Column::Id",
         on_update = "Cascade",
         on_delete = "Cascade"
     )]
-    Benefactor,
+    Beneficiary,
     #[sea_orm(
         belongs_to = "super::donator::Entity",
         from = "Column::IdDonator",
@@ -40,9 +40,9 @@ impl Related<super::aliment_per_donation::Entity> for Entity {
     }
 }
 
-impl Related<super::benefactor::Entity> for Entity {
+impl Related<super::beneficiary::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Benefactor.def()
+        Relation::Beneficiary.def()
     }
 }
 

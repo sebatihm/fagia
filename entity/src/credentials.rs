@@ -2,11 +2,9 @@
 
 use super::sea_orm_active_enums::RType;
 use sea_orm::entity::prelude::*;
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "credentials")]
-#[derive(Serialize,Deserialize)]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
@@ -18,15 +16,15 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::benefactor::Entity")]
-    Benefactor,
+    #[sea_orm(has_many = "super::beneficiary::Entity")]
+    Beneficiary,
     #[sea_orm(has_many = "super::donator::Entity")]
     Donator,
 }
 
-impl Related<super::benefactor::Entity> for Entity {
+impl Related<super::beneficiary::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Benefactor.def()
+        Relation::Beneficiary.def()
     }
 }
 

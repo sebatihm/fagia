@@ -4,7 +4,7 @@ pub mod prelude;
 
 pub mod aliment_per_donation;
 pub mod aliments;
-pub mod benefactor;
+pub mod beneficiary;
 pub mod credentials;
 pub mod donation;
 pub mod donator;
