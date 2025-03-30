@@ -3,10 +3,10 @@
 use super::sea_orm_active_enums::RType;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
+#[derive(Serialize,Deserialize)]
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "credentials")]
-#[derive(Serialize, Deserialize)]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,

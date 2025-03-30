@@ -43,7 +43,11 @@ async fn main() -> std::io::Result<()> {
 
             //Loading the account configurations
             .configure(routes::account::config)
-            
+            .service(web::scope("")
+                .wrap(from_fn(routes::middlewares::auth_middleware::check_auth_middleware))
+                .configure(routes::aliments::config) 
+            )
+                      
             
             //Loading the user routes
             // .configure(routes::user_routes::config)

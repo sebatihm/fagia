@@ -1,17 +1,13 @@
-use std::collections::btree_map::Entry;
-
-use actix_web::error::{ErrorBadGateway, HttpError};
 use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
-use actix_web::{get, post, web, Responder};
-use entity::credentials;
-use sea_orm::{ActiveValue::Set, Condition, ConnectionTrait, EntityTrait, QueryFilter, Statement};
+use actix_web::{ post, web, Responder};
+use sea_orm::{ActiveValue::Set, Condition, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use sha256::digest;
 use sea_orm::ActiveModelTrait;
 use sea_orm::ColumnTrait;
-use crate::utils::app_state::{self, AppState};
-use crate::utils::jwt::{self, encode_jwt};
+use crate::utils::app_state::AppState;
+use crate::utils::jwt::encode_jwt;
 
 
 #[derive(Serialize, Deserialize)]
@@ -35,7 +31,7 @@ async fn register_credentials(app_state: &web::Data<AppState>, credentials: Logi
     ).one(&app_state.db).await.unwrap();
 
     match user {
-        Some(data) => {
+        Some(_data) => {
             Ok(String::from("INVALID"))
         },
         None => {
@@ -100,7 +96,7 @@ struct RegisterBeneficiaryModel{
     phone: String,
     legal_name: String,
     foundation_date: chrono::NaiveDate,
-    NIF: String,
+    nif: String,
     website: String,
     email: String,
     password: String,
@@ -124,7 +120,7 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
         Err(_) => {
             let nif_taken = entity::beneficiary::Entity::find().filter(
                 Condition::all()
-                    .add(entity::beneficiary::Column::Nif.eq(register_json.NIF.clone()))
+                    .add(entity::beneficiary::Column::Nif.eq(register_json.nif.clone()))
              ).one(&app_state.db).await.unwrap();
         
             if nif_taken != None {
@@ -146,7 +142,7 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
                 representant_lastname_m: Set(register_json.representant_lastname_m.clone()), 
                 phone: Set(register_json.phone.clone()), 
                 legal_name: Set(register_json.legal_name.clone()), 
-                nif: Set(register_json.NIF.clone()),         
+                nif: Set(register_json.nif.clone()),         
                 website: Set(register_json.website.clone()),
                 foundation_date: Set(register_json.foundation_date.clone()), 
                 credentials_id: Set(credentials_model.id.clone()),

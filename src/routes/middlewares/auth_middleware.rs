@@ -17,44 +17,8 @@ pub async fn check_auth_middleware( req: ServiceRequest, next: Next<impl Message
 
     let token = auth.unwrap().to_str().unwrap().replace("Bearer ", "").to_owned();
     let claim = decode_jwt(token).unwrap().claims;
+    req.extensions_mut().insert(claim);
     
-    next.call(req).await
-    .map_err(|err |ErrorUnauthorized(err) )
-}
-
-pub async fn check_beneficiary( req: ServiceRequest, next: Next<impl MessageBody>) -> Result<ServiceResponse<impl MessageBody>, Error>{
-    let auth = req.headers().get(AUTHORIZATION);
-    
-    if auth.is_none(){
-        return Err(ErrorUnauthorized("Unauthorized"));
-    }
-
-    let token = auth.unwrap().to_str().unwrap().replace("Bearer ", "").to_owned();
-    let claim = decode_jwt(token).unwrap().claims;
-
-    if claim.role != String::from("Beneficiary"){
-        return Err(ErrorUnauthorized("Unauthorized"));
-    }
-    
-    next.call(req).await
-    .map_err(|err |ErrorUnauthorized(err) )
-}
-
-
-
-pub async fn check_donator( req: ServiceRequest, next: Next<impl MessageBody>) -> Result<ServiceResponse<impl MessageBody>, Error>{
-    let auth = req.headers().get(AUTHORIZATION);
-    
-    if auth.is_none(){
-        return Err(ErrorUnauthorized("Unauthorized"));
-    }
-
-    let token = auth.unwrap().to_str().unwrap().replace("Bearer ", "").to_owned();
-    let claim = decode_jwt(token).unwrap().claims;
-
-    if claim.role != String::from("Donator"){
-        return Err(ErrorUnauthorized("Unauthorized"));
-    }
     
     next.call(req).await
     .map_err(|err |ErrorUnauthorized(err) )
