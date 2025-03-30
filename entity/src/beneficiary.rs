@@ -16,6 +16,7 @@ pub struct Model {
     pub legal_name: String,
     #[sea_orm(unique)]
     pub nif: String,
+    pub website: String,
     pub foundation_date: Date,
     pub credentials_id: i32,
 }

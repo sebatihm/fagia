@@ -15,12 +15,13 @@ impl MigrationTrait for Migration {
                     .table(Beneficiary::Table)
                     .if_not_exists()
                     .col(pk_auto(Beneficiary::Id))
-                    .col(string(Beneficiary::representant_name).not_null())
+                    .col(string(Beneficiary::representant_name).not_null().char_len(13))
                     .col(string(Beneficiary::representant_lastname_f).not_null())
                     .col(string(Beneficiary::representant_lastname_m).not_null())
                     .col(string(Beneficiary::phone).not_null())
                     .col(string(Beneficiary::legal_name).not_null())
                     .col(string(Beneficiary::NIF).not_null().unique_key())
+                    .col(string(Beneficiary::website).not_null())
                     .col(date(Beneficiary::foundation_date).not_null())
                     .col(integer(Beneficiary::credentials_id).not_null())
                     .foreign_key(
@@ -54,6 +55,7 @@ pub enum Beneficiary {
     phone,
     legal_name,
     NIF,
+    website,
     foundation_date,
     credentials_id
 }
