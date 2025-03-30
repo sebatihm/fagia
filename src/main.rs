@@ -1,4 +1,4 @@
-use actix_web::{ middleware::Logger, web, App, HttpServer};
+use actix_web::{ middleware::{from_fn, Logger}, web, App, HttpServer};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
 use utils::app_state::AppState;
@@ -43,6 +43,7 @@ async fn main() -> std::io::Result<()> {
 
             //Loading the account configurations
             .configure(routes::account::config)
+            
             
             //Loading the user routes
             // .configure(routes::user_routes::config)

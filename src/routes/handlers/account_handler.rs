@@ -32,7 +32,6 @@ async fn register_credentials(app_state: &web::Data<AppState>, credentials: Logi
         .filter(
             Condition::all()
                 .add(entity::credentials::Column::Email.eq(&credentials.email))
-                .add(entity::credentials::Column::Password.eq (digest(&credentials.password)))
     ).one(&app_state.db).await.unwrap();
 
     match user {
@@ -110,11 +109,7 @@ struct RegisterBeneficiaryModel{
 
 #[post("/register-beneficiary")]
 pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: web::Json<RegisterBeneficiaryModel>) -> impl Responder{
-    // if entity::beneficiary::Entity::find()
-    //     .filter(
-    //         Condition::all()
-    //             .add(entity::beneficiary::Column::Nif.eq(register_json.NIF.clone()))
-    //     ).one(&app_state.db).await{
+
 
     let creds = LoginModel{ 
         email: register_json.email.clone(), 
@@ -189,7 +184,7 @@ pub async fn login(app_state: web::Data<AppState>, login_json: web::Json<LoginMo
     match user {
 
         Some(data) => {
-            let token = encode_jwt(data.email, data.id).unwrap();
+            let token = encode_jwt(data.email, data.id, data.r_type).unwrap();
 
             return HttpResponse::Ok()
                 .status(StatusCode::from_u16(201).unwrap())
