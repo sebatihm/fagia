@@ -23,7 +23,7 @@ services:
       MYSQL_DATABASE: fagia
 
   fagia-app:
-    image: sebatihm/db
+    image: sebatihm/fagia:1
     container_name: fagia-app
     networks:
       - mi-red
