@@ -1,3 +1,5 @@
+use std::env;
+
 use actix_web::{ middleware::{from_fn, Logger}, web, App, HttpServer};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
@@ -26,8 +28,9 @@ async fn main() -> std::io::Result<()> {
     // let database_url = (*utils::constants::DATABASE_URL).clone();
 
 
+
     //Connecting to the databaseç
-    let db = Database::connect("mysql://root:@localhost:3306/fagia".to_string()).await.unwrap();
+    let db = Database::connect("mysql://root:root@db:3306/fagia".to_string()).await.unwrap();
 
     //Running migrations
     Migrator::up(&db, None).await.unwrap();
