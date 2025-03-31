@@ -2,8 +2,6 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use serde::{Deserialize, Serialize};
 
-use super::constants;
-
 #[derive(Serialize, Deserialize)]
 pub struct Claims{
     pub exp: usize,

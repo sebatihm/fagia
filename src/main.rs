@@ -1,5 +1,3 @@
-use std::env;
-
 use actix_web::{ middleware::{from_fn, Logger}, web, App, HttpServer};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
