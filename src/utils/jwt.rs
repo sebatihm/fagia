@@ -31,18 +31,16 @@ pub fn encode_jwt(email: String, id:i32, rol: entity::sea_orm_active_enums::RTyp
         role
     };
 
-    let secret = (*constants::SECRET).clone();
 
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_ref()))
+    encode(&Header::default(), &claims, &EncodingKey::from_base64_secret("FAGIA_1234567890").unwrap())
 
     
 }
 
 pub fn decode_jwt(jwt: String) -> Result<TokenData<Claims>,jsonwebtoken::errors::Error> {
-    let secret = (*constants::SECRET).clone();
     let claim_data: Result<TokenData<Claims>, jsonwebtoken::errors::Error> = decode(
         &jwt, 
-        &DecodingKey::from_secret(secret.as_ref()), 
+        &DecodingKey::from_base64_secret("FAGIA_1234567890").unwrap(), 
         &Validation::default()
     );
 

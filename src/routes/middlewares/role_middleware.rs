@@ -35,6 +35,7 @@ pub async fn check_donator( req: ServiceRequest, next: Next<impl MessageBody>) -
         return Err(ErrorUnauthorized("Unauthorized - The user is not a donator"));
     }
     
+    
     next.call(req).await
     .map_err(|err |ErrorUnauthorized(err) )
 }

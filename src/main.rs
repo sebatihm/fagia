@@ -21,13 +21,13 @@ async fn main() -> std::io::Result<()> {
 
 
     //Getting the enviroment variables
-    let address = (*utils::constants::ADDRESS).clone();
-    let port = (*utils::constants::PORT).clone();
-    let database_url = (*utils::constants::DATABASE_URL).clone();
+    // let address = (*utils::constants::ADDRESS).clone();
+    // let port = (*utils::constants::PORT).clone();
+    // let database_url = (*utils::constants::DATABASE_URL).clone();
 
 
     //Connecting to the databaseç
-    let db = Database::connect(database_url).await.unwrap();
+    let db = Database::connect("mysql://root:@localhost:3306/fagia".to_string()).await.unwrap();
 
     //Running migrations
     Migrator::up(&db, None).await.unwrap();
@@ -56,7 +56,7 @@ async fn main() -> std::io::Result<()> {
             // .configure(routes::blog_routes::config)
         
     })
-    .bind((address, port))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }

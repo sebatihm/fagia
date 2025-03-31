@@ -1,7 +1,7 @@
 use actix_web::dev::ServiceResponse;
 use actix_web::error::{ErrorBadGateway, ErrorUnauthorized};
 use actix_web::http::header::AUTHORIZATION;
-use actix_web::{Error, HttpMessage, HttpRequest};
+use actix_web::{Error, HttpMessage};
 use actix_web::{body::MessageBody, dev::ServiceRequest};
 use actix_web::middleware::Next;
 
