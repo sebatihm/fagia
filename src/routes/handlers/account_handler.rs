@@ -151,7 +151,6 @@ pub async fn login(app_state: web::Data<AppState>, login_json: web::Json<LoginMo
             let token = encode_jwt(data.email, data.id, data.r_type).unwrap();
 
             return HttpResponse::Ok()
-                .status(StatusCode::from_u16(201).unwrap())
                 .body(format!("token: {{ {token} }}"));
         },
 

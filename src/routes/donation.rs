@@ -5,10 +5,10 @@ use super::{handlers, middlewares::role_middleware};
 
 pub fn config(config: &mut web::ServiceConfig){
     config.service(web::scope("/donation")
-        .wrap(from_fn(role_middleware::check_donator))
-        // .service(super::handlers::aliment_handler::index)
-        .service(super::handlers::donation_handler::create)
-        // .service(super::handlers::aliment_handler::destroy)
-
+        .service(handlers::donation_handler::index)
+        .service(web::scope("")
+            .wrap(from_fn(role_middleware::check_donator))
+            .service(handlers::donation_handler::create)
+        )
     );
 }

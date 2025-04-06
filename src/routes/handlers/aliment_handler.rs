@@ -9,22 +9,21 @@ use super::dto_model::aliment_dto::Aliment;
 
 
 async fn get_donator(id: i32,app_state: &web::Data<AppState>) -> Option<donator::Model>{
-    let donator = donator::Entity::find_by_id(id.clone()).one(&app_state.db).await.unwrap();
+
+    let donator = entity::donator::Entity::find()
+        .filter(
+            Condition::all()
+                .add(entity::donator::Column::CredentialsId.eq(id))
+    ).one(&app_state.db).await.unwrap();
     donator
 }
-//Pediente
 
 #[get("")]
 pub async fn index(req: HttpRequest, app_state: web::Data<AppState>) -> HttpResponse{
-    let benefactor: Option<donator::Model> = get_donator(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
+    let donator: Option<donator::Model> = get_donator(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
+    let results = donator.unwrap().find_related(aliments::Entity).all(&app_state.db).await.unwrap();
 
-    let results = benefactor.unwrap().find_related(aliments::Entity).all(&app_state.db).await.unwrap();
-
-
-
-    return HttpResponse::Ok()
-        .status(StatusCode::from_u16(200).unwrap())
-        .json(results);
+    return HttpResponse::Ok().json(results);
 }
 
 #[post("")]
@@ -41,14 +40,13 @@ pub async fn create(req: HttpRequest, app_state: web::Data<AppState>, aliment_js
         ..Default::default()
     }.insert(&app_state.db).await.unwrap();
 
-    return HttpResponse::Ok()
-        .status(StatusCode::from_u16(201).unwrap())
-        .json(aliment_model);
+    return HttpResponse::Created().json(aliment_model);
     
 }
 
 #[post("/{id}")]
 pub async fn show(req: HttpRequest, app_state: web::Data<AppState>, id: web::Path<u32>) -> HttpResponse{
+    let donator = get_donator(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
     let aliment = aliments::Entity::find()
         .filter(
             Condition::all()
@@ -57,9 +55,8 @@ pub async fn show(req: HttpRequest, app_state: web::Data<AppState>, id: web::Pat
 
     match aliment{
         Some(data) =>{
-            if data.id_donator == req.extensions().get::<Claims>().unwrap().id.clone(){
+            if data.id_donator == donator.unwrap().id{
                 return HttpResponse::Ok()
-                    .status(StatusCode::from_u16(200).unwrap())
                     .json(data);
             }else{
                 return HttpResponse::Unauthorized().body("The aliment doesnt belong to the authentificated user");
@@ -76,6 +73,8 @@ pub async fn show(req: HttpRequest, app_state: web::Data<AppState>, id: web::Pat
 
 #[delete("/{id}")]
 pub async fn destroy(req: HttpRequest, app_state: web::Data<AppState>, id: web::Path<u32>) -> HttpResponse{
+    let donator = get_donator(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
+
     let aliment = aliments::Entity::find()
         .filter(
             Condition::all()
@@ -86,7 +85,7 @@ pub async fn destroy(req: HttpRequest, app_state: web::Data<AppState>, id: web::
     match aliment {
         Some(data) => {
 
-            if data.id_donator == req.extensions().get::<Claims>().unwrap().id{
+            if data.id_donator == donator.unwrap().id{
                 let _res: DeleteResult = data.delete(&app_state.db).await.unwrap();
 
                 return HttpResponse::Ok()
