@@ -6,6 +6,9 @@ use super::middlewares::role_middleware;
 pub fn config(config: &mut web::ServiceConfig){
     config.service(web::scope("/aliments")
         .wrap(from_fn(role_middleware::check_donator))
+        .service(super::handlers::aliment_handler::index)
         .service(super::handlers::aliment_handler::create)
+        .service(super::handlers::aliment_handler::destroy)
+
     );
 }
