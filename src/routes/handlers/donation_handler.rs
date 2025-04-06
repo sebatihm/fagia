@@ -21,6 +21,11 @@ pub async fn create(req: HttpRequest ,app_state: web::Data<AppState>,donation_ha
         if _aliment == None{
             return HttpResponse::BadRequest().body(format!("The aliment with id: {} does not exist",i));
         }
+        if _aliment.clone().unwrap().id_donator != req.extensions().get::<Claims>().unwrap().id {
+            return HttpResponse::Unauthorized().body(format!("The aliment with id: {} does not belong to the autentificated user!",i));
+        }else if _aliment.unwrap().find_related(entity::aliment_per_donation::Entity).one(&app_state.db).await.unwrap() != None{
+            return HttpResponse::BadRequest().body(format!("The aliment with id: {} has already been donated!",i));
+        }
         
     }
 
