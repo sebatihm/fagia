@@ -1,21 +1,14 @@
 use std::u32;
-
 use actix_web::{delete, get, http::StatusCode, post, web, HttpMessage, HttpRequest, HttpResponse};
 use entity::{aliments, donator};
 use sea_orm::{ActiveValue::Set, Condition, DeleteResult, EntityTrait, QueryFilter};
-use serde::{Deserialize, Serialize};
 use sea_orm::{ActiveModelTrait,ColumnTrait, ModelTrait};
 use crate::utils::{app_state::AppState, jwt::Claims};
+use super::dto_model::aliment_dto::Aliment;
 
-#[derive(Serialize,Deserialize)]
-struct Aliment{
-    pub name: String,
-    pub r_type: String,
-    pub description: String,
-    pub lots: i32,
-    pub caducity_date: chrono::NaiveDate,
-}
-async fn get_benefactor(id: i32,app_state: &web::Data<AppState>) -> Option<donator::Model>{
+
+
+async fn get_donator(id: i32,app_state: &web::Data<AppState>) -> Option<donator::Model>{
     let donator = donator::Entity::find_by_id(id.clone()).one(&app_state.db).await.unwrap();
     donator
 }
@@ -23,7 +16,7 @@ async fn get_benefactor(id: i32,app_state: &web::Data<AppState>) -> Option<donat
 
 #[get("")]
 pub async fn index(req: HttpRequest, app_state: web::Data<AppState>) -> HttpResponse{
-    let benefactor = get_benefactor(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
+    let benefactor: Option<donator::Model> = get_donator(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
 
     let results = benefactor.unwrap().find_related(aliments::Entity).all(&app_state.db).await.unwrap();
 

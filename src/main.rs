@@ -20,7 +20,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
 
-    //Getting the enviroment variables
+    //Getting the enviroment variables 
     let address = (*utils::constants::ADDRESS).clone();
     let port = (*utils::constants::PORT).clone();
     let database_url = (*utils::constants::DATABASE_URL).clone();
@@ -46,6 +46,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("")
                 .wrap(from_fn(routes::middlewares::auth_middleware::check_auth_middleware))
                 .configure(routes::aliments::config) 
+                .configure(routes::donation::config)
             )
                       
             

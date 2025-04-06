@@ -2,25 +2,15 @@ use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
 use actix_web::{ post, web, Responder};
 use sea_orm::{ActiveValue::Set, Condition, EntityTrait, QueryFilter};
-use serde::{Deserialize, Serialize};
 use sha256::digest;
 use sea_orm::ActiveModelTrait;
 use sea_orm::ColumnTrait;
+
+
+use crate::routes::handlers::dto_model::account_dto::{LoginModel, RegisterBeneficiaryModel, RegisterDonatorModel};
 use crate::utils::app_state::AppState;
 use crate::utils::jwt::encode_jwt;
 
-
-#[derive(Serialize, Deserialize)]
-struct RegisterDonatorModel{
-    name: String,
-    lastname_f: String,
-    lastname_m: String,
-    phone: String,
-    organization_name: String,
-    email: String,
-    password: String,
-    r_type: entity::sea_orm_active_enums::RType
-}
 
 
 async fn register_credentials(app_state: &web::Data<AppState>, credentials: LoginModel) -> Result<String,String>{
@@ -87,22 +77,6 @@ pub async fn register_donator(app_state: web::Data<AppState>, register_json: web
 }
 
 
-
-#[derive(Serialize, Deserialize)]
-struct RegisterBeneficiaryModel{
-    representant_name: String,
-    representant_lastname_f: String,
-    representant_lastname_m: String,
-    phone: String,
-    legal_name: String,
-    foundation_date: chrono::NaiveDate,
-    nif: String,
-    website: String,
-    email: String,
-    password: String,
-    r_type: entity::sea_orm_active_enums::RType
-}
-
 #[post("/register-beneficiary")]
 pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: web::Json<RegisterBeneficiaryModel>) -> impl Responder{
 
@@ -160,12 +134,6 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
 
 }
 
-#[derive(Serialize,Deserialize)]
-pub struct LoginModel{
-        email: String,
-        password: String,
-        r_type: entity::sea_orm_active_enums::RType
-}
 
 #[post("/login")]
 pub async fn login(app_state: web::Data<AppState>, login_json: web::Json<LoginModel>) -> HttpResponse{
