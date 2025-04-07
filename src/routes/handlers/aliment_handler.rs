@@ -1,5 +1,5 @@
 use std::u32;
-use actix_web::{delete, get, http::StatusCode, post, web, HttpMessage, HttpRequest, HttpResponse};
+use actix_web::{delete, get, post, web, HttpMessage, HttpRequest, HttpResponse};
 use entity::{aliments, donator};
 use sea_orm::{ActiveValue::Set, Condition, DeleteResult, EntityTrait, QueryFilter};
 use sea_orm::{ActiveModelTrait,ColumnTrait, ModelTrait};
@@ -90,7 +90,6 @@ pub async fn destroy(req: HttpRequest, app_state: web::Data<AppState>, id: web::
                 let _res: DeleteResult = data.delete(&app_state.db).await.unwrap();
 
                 return HttpResponse::Ok()
-                    .status(StatusCode::from_u16(200).unwrap())
                     .body("The operation was succesfull");
             }else{
                 return HttpResponse::Unauthorized().body("You are not the owner of this aliment");

@@ -1,4 +1,3 @@
-use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
 use actix_web::{ post, web, Responder};
 use sea_orm::{ActiveValue::Set, Condition, EntityTrait, QueryFilter};
@@ -66,8 +65,7 @@ pub async fn register_donator(app_state: web::Data<AppState>, register_json: web
             }.insert(&app_state.db).await.unwrap();
         
             
-            return HttpResponse::Ok()
-                .status(StatusCode::from_u16(201).unwrap())
+            return HttpResponse::Created()
                 .json(donator_model);
         },
     };
@@ -122,8 +120,7 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
             }.insert(&app_state.db).await.unwrap();
         
         
-            return HttpResponse::Ok()
-                .status(StatusCode::from_u16(201).unwrap())
+            return HttpResponse::Created()
                 .json(beneficiary_model);
             },
     }
@@ -149,7 +146,7 @@ pub async fn login(app_state: web::Data<AppState>, login_json: web::Json<LoginMo
             let token = encode_jwt(data.email, data.id, data.r_type).unwrap();
 
             return HttpResponse::Ok()
-                .body(format!("token: {{ {token} }}"));
+                .body(format!("token:{token}"));
         },
 
         None => {
