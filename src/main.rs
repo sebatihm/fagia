@@ -48,13 +48,6 @@ async fn main() -> std::io::Result<()> {
                 .configure(routes::aliments::config) 
                 .configure(routes::donation::config)
             )
-                      
-            
-            //Loading the user routes
-            // .configure(routes::user_routes::config)
-
-            //Loading the routes configurations
-            // .configure(routes::blog_routes::config)
         
     })
     .bind((address, port))?
