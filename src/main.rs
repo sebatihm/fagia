@@ -26,8 +26,9 @@ async fn main() -> std::io::Result<()> {
     let database_url = (*utils::constants::DATABASE_URL).clone();
 
 
-    //Connecting to the databaseç
+    //Connecting to the database
     let db = Database::connect(database_url).await.unwrap();
+    println!("[FAGIA]   The database connection was sucessfull");
 
     //Running migrations
     Migrator::up(&db, None).await.unwrap();
@@ -43,6 +44,7 @@ async fn main() -> std::io::Result<()> {
 
             //Loading the account configurations
             .configure(routes::account::config)
+            //Loading the routes (endpoints) and protecting them with autentification via JWT
             .service(web::scope("")
                 .wrap(from_fn(routes::middlewares::auth_middleware::check_auth_middleware))
                 .configure(routes::aliments::config) 

@@ -6,4 +6,3 @@ pub use super::beneficiary::Entity as Beneficiary;
 pub use super::credentials::Entity as Credentials;
 pub use super::donation::Entity as Donation;
 pub use super::donator::Entity as Donator;
-pub use super::post::Entity as Post;

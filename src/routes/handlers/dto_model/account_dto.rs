@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 pub struct LoginModel{
     pub email: String,
     pub password: String,
-    pub r_type: entity::sea_orm_active_enums::RType
 }
 
 #[derive(Serialize, Deserialize)]

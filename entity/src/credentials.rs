@@ -4,7 +4,6 @@ use super::sea_orm_active_enums::RType;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 #[derive(Serialize,Deserialize)]
-
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(table_name = "credentials")]
 pub struct Model {

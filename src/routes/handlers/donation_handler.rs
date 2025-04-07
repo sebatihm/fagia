@@ -66,7 +66,7 @@ pub async fn create(req: HttpRequest ,app_state: web::Data<AppState>,donation_ha
     let donation_record = donation::ActiveModel{
         date: Set(donation_handler.date.clone()),
         id_donator: Set(donator.clone().unwrap().id ),
-        id_benefactor: Set(donation_handler.id_beneficiary.clone()),
+        id_beneficiary: Set(donation_handler.id_beneficiary.clone()),
         ..Default::default()
     }.insert(&app_state.db).await.unwrap();
 
@@ -81,7 +81,7 @@ pub async fn create(req: HttpRequest ,app_state: web::Data<AppState>,donation_ha
         id: donation_record.id,
         date: donation_record.date,
         id_donator: donation_record.id_donator,
-        id_beneficiary: donation_record.id_benefactor,
+        id_beneficiary: donation_record.id_beneficiary,
         aliments: donation_record.find_related(entity::aliments::Entity).all(&app_state.db).await.unwrap(),
     };
 
@@ -119,7 +119,7 @@ pub async fn filter(req: HttpRequest ,app_state: web::Data<AppState>,days: web::
             id: donation_record.id,
             date: donation_record.date,
             id_donator: donation_record.id_donator,
-            id_beneficiary: donation_record.id_benefactor,
+            id_beneficiary: donation_record.id_beneficiary,
             aliments: donation_record.find_related(entity::aliments::Entity).all(&app_state.db).await.unwrap(),
         });
     }
@@ -136,7 +136,7 @@ pub async fn donator_of_donation(req: HttpRequest ,app_state: web::Data<AppState
 
     if donation == None {
         return HttpResponse::BadRequest().body("The donation doesnt exists");
-    }else if donation.clone().unwrap().id_benefactor != beneficiary.id{
+    }else if donation.clone().unwrap().id_beneficiary != beneficiary.id{
         return HttpResponse::Unauthorized().body("The authenticated user did not receive that donation.");
     }
 

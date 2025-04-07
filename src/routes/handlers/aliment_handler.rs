@@ -28,6 +28,7 @@ pub async fn index(req: HttpRequest, app_state: web::Data<AppState>) -> HttpResp
 
 #[post("")]
 pub async fn create(req: HttpRequest, app_state: web::Data<AppState>, aliment_json: web::Json<Aliment>) -> HttpResponse{
+    let donator: Option<donator::Model> = get_donator(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
 
 
     let aliment_model = aliments::ActiveModel{ 
@@ -36,7 +37,7 @@ pub async fn create(req: HttpRequest, app_state: web::Data<AppState>, aliment_js
         description: Set(aliment_json.description.clone()), 
         lots: Set(aliment_json.lots), 
         caducity_date: Set(aliment_json.caducity_date), 
-        id_donator: Set(req.extensions().get::<Claims>().unwrap().id.clone()),
+        id_donator: Set(donator.unwrap().id),
         ..Default::default()
     }.insert(&app_state.db).await.unwrap();
 

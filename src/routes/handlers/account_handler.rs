@@ -37,7 +37,6 @@ pub async fn register_donator(app_state: web::Data<AppState>, register_json: web
     let cred = LoginModel{ 
         email: register_json.email.clone(), 
         password: register_json.password.clone(), 
-        r_type: register_json.r_type.clone() 
     };
 
     match register_credentials(&app_state, cred).await{
@@ -60,7 +59,7 @@ pub async fn register_donator(app_state: web::Data<AppState>, register_json: web
                 lastname_f: Set(register_json.lastname_f.clone()), 
                 lastname_m: Set(register_json.lastname_m.clone()), 
                 phone: Set(register_json.phone.clone()), 
-                organization_name: Set(register_json.phone.clone()), 
+                organization_name: Set(register_json.organization_name.clone()), 
                 credentials_id: Set(credentials_model.id), 
                 ..Default::default() 
                 
@@ -84,7 +83,6 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
     let creds = LoginModel{ 
         email: register_json.email.clone(), 
         password: register_json.password.clone(), 
-        r_type: register_json.r_type.clone() 
     };
 
     match register_credentials(&app_state, creds).await {

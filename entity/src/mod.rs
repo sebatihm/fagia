@@ -8,5 +8,4 @@ pub mod beneficiary;
 pub mod credentials;
 pub mod donation;
 pub mod donator;
-pub mod post;
 pub mod sea_orm_active_enums;

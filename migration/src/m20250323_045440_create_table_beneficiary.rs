@@ -26,7 +26,7 @@ impl MigrationTrait for Migration {
                     .col(integer(Beneficiary::credentials_id).not_null())
                     .foreign_key(
                         ForeignKey::create()
-                            .name("fk-credentials-benefactor-id")
+                            .name("fk-credentials-beneficiary-id")
                             .from(Beneficiary::Table, Beneficiary::credentials_id)
                             .to(super::m20250323_044314_create_table_credentials::Credentials::Table, super::m20250323_044314_create_table_credentials::Credentials::Id)
                             .on_delete(ForeignKeyAction::Cascade)

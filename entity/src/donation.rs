@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
     pub date: Date,
-    pub id_benefactor: i32,
+    pub id_beneficiary: i32,
     pub id_donator: i32,
 }
 
@@ -19,7 +19,7 @@ pub enum Relation {
     AlimentPerDonation,
     #[sea_orm(
         belongs_to = "super::beneficiary::Entity",
-        from = "Column::IdBenefactor",
+        from = "Column::IdBeneficiary",
         to = "super::beneficiary::Column::Id",
         on_update = "Cascade",
         on_delete = "Cascade"
