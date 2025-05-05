@@ -1,3 +1,4 @@
+use actix_cors::Cors;
 use actix_web::{ middleware::{from_fn, Logger}, web, App, HttpServer};
 use migration::{Migrator, MigratorTrait};
 use sea_orm::Database;
@@ -32,6 +33,8 @@ async fn main() -> std::io::Result<()> {
 
     //Running migrations
     Migrator::up(&db, None).await.unwrap();
+    println!("[FAGIA]   The migrations were applied succesfully");
+
 
 
     HttpServer::new(move || {
@@ -39,6 +42,8 @@ async fn main() -> std::io::Result<()> {
             //Loading the connection 
             .app_data(web::Data::new(AppState{ db: db.clone()}))
 
+            // Setting up CORS permisive model
+            .wrap(Cors::permissive())
             //Adding the logger
             .wrap(Logger::default())
 
