@@ -1,7 +1,7 @@
 use actix_web::dev::ServiceResponse;
-use actix_web::error::ErrorUnauthorized;
-use actix_web::http::header::AUTHORIZATION;
-use actix_web::{Error, HttpMessage};
+use actix_web::error::{ErrorUnauthorized, InternalError};
+use actix_web::http::header::{self, AUTHORIZATION};
+use actix_web::{Error, HttpMessage, HttpResponse};
 use actix_web::{body::MessageBody, dev::ServiceRequest};
 use actix_web::middleware::Next;
 
@@ -11,11 +11,19 @@ pub async fn check_beneficiary( req: ServiceRequest, next: Next<impl MessageBody
     let auth = req.headers().get(AUTHORIZATION);
     
     if auth.is_none(){
-        return Err(ErrorUnauthorized("Unauthorized - The JWT wasnt specified"));
+        let response = HttpResponse::Unauthorized()
+            .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+            .json("The User Must specify the JWT");
+
+        return Err(InternalError::from_response("Unauthorized", response).into());
     }
 
     if req.extensions().get::<Claims>().unwrap().role != String::from("Beneficiary"){
-        return Err(ErrorUnauthorized("Unauthorized - The user is not a Beneficiary"));
+        let response = HttpResponse::Unauthorized()
+        .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+        .json("The User is not a Beneficiary");
+
+        return Err(InternalError::from_response("Unauthorized", response).into());
     }
     
     next.call(req).await
@@ -28,11 +36,20 @@ pub async fn check_donator( req: ServiceRequest, next: Next<impl MessageBody>) -
     let auth = req.headers().get(AUTHORIZATION);
     
     if auth.is_none(){
-        return Err(ErrorUnauthorized("Unauthorized - The JWT wasnt specified"));
+        let response = HttpResponse::Unauthorized()
+            .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+            .json("The User Must specify the JWT");
+
+        return Err(InternalError::from_response("Unauthorized", response).into());
     }
 
     if req.extensions().get::<Claims>().unwrap().role != String::from("Donator"){
-        return Err(ErrorUnauthorized("Unauthorized - The user is not a donator"));
+
+        let response = HttpResponse::Unauthorized()
+            .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
+            .json("The User is not a Donator");
+
+        return Err(InternalError::from_response("Unauthorized", response).into());
     }
     
     next.call(req).await
