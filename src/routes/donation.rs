@@ -15,5 +15,6 @@ pub fn config(config: &mut web::ServiceConfig){
             .wrap(from_fn(role_middleware::check_donator))
             .service(handlers::donation_handler::create)
         )
+        .service(handlers::donation_handler::get_beneficiaries)
     );
 }

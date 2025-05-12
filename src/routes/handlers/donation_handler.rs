@@ -4,6 +4,7 @@ use sea_orm::{ActiveValue::Set, EntityTrait};
 use sea_orm::{ActiveModelTrait, Condition, ModelTrait, QueryFilter};
 use sea_orm::ColumnTrait;
 
+use crate::routes::handlers::dto_model::account_dto::Message;
 use crate::utils::{app_state::AppState, jwt::Claims};
 use super::dto_model::donation_dto::{DTODonation, DonationModel};
 
@@ -43,7 +44,7 @@ pub async fn create(req: HttpRequest ,app_state: web::Data<AppState>,donation_ha
     let beneficiary = entity::beneficiary::Entity::find_by_id(donation_handler.id_beneficiary).one(&app_state.db).await.unwrap();
     
     if beneficiary == None{
-        return HttpResponse::BadRequest().body("The beneficiary doesnt exists");
+        return HttpResponse::BadRequest().json(Message{message: format!("The beneficiary doesnt exists")});
     }
 
 
@@ -52,13 +53,13 @@ pub async fn create(req: HttpRequest ,app_state: web::Data<AppState>,donation_ha
         let _aliment = entity::aliments::Entity::find_by_id(i.clone()).one(&app_state.db).await.unwrap();
 
         if _aliment == None{
-            return HttpResponse::BadRequest().body(format!("The aliment with id: {} does not exist",i));
+            return HttpResponse::BadRequest().json(Message{message: format!("The aliment with id: {} does not exist",i)});
         }
 
         if _aliment.clone().unwrap().id_donator != donator.clone().unwrap().id {
-            return HttpResponse::Unauthorized().body(format!("The aliment with id: {} does not belong to the autentificated user!",i));
+            return HttpResponse::Unauthorized().json(Message{message: format!("The aliment with id: {} has already been donated!",i)});
         }else if _aliment.unwrap().find_related(entity::aliment_per_donation::Entity).one(&app_state.db).await.unwrap() != None{
-            return HttpResponse::BadRequest().body(format!("The aliment with id: {} has already been donated!",i));
+            return HttpResponse::BadRequest().json(Message{message: format!("The aliment with id: {} has already been donated!",i)});
         }
         
     }
@@ -109,7 +110,7 @@ pub async fn filter(req: HttpRequest ,app_state: web::Data<AppState>,days: web::
     ).all(&app_state.db).await.unwrap();
 
     if donations.is_empty(){
-        return HttpResponse::Ok().body("There are no donations");
+        return HttpResponse::Ok().json(Message{message: "There are no donations".to_string()});
     }
 
     let mut dtodonations : Vec<DTODonation> = vec![];
@@ -135,13 +136,24 @@ pub async fn donator_of_donation(req: HttpRequest ,app_state: web::Data<AppState
     let donation = donation::Entity::find_by_id(donation.abs()).one(&app_state.db).await.unwrap();
 
     if donation == None {
-        return HttpResponse::BadRequest().body("The donation doesnt exists");
+        return HttpResponse::BadRequest().json(Message{message: "The donation doesnt exists".to_string()});
     }else if donation.clone().unwrap().id_beneficiary != beneficiary.id{
-        return HttpResponse::Unauthorized().body("The authenticated user did not receive that donation.");
+        return HttpResponse::Unauthorized().json(Message{message: "The authenticated user did not receive that donation.".to_string()});
     }
 
     let donator = donation.unwrap().find_related(entity::donator::Entity).one(&app_state.db).await.unwrap().unwrap();
 
     return HttpResponse::Ok().json(donator);
     
+}
+
+#[get("/beneficiaries")]
+pub async fn get_beneficiaries(app_state: web::Data<AppState>) -> HttpResponse{
+    let beneficiaries = beneficiary::Entity::find().all(&app_state.db).await; 
+
+    match beneficiaries {
+        Ok(models) => return HttpResponse::Ok().json(models),
+        Err(_) => return HttpResponse::InternalServerError().json(Message{message: "Something went wrong".to_string()}),
+    }
+
 }

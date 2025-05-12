@@ -33,3 +33,13 @@ pub struct RegisterDonatorModel{
     pub password: String,
     pub r_type: entity::sea_orm_active_enums::RType
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct Token {
+    pub token : String
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Message {
+    pub message: String
+}

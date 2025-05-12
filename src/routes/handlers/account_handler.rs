@@ -6,7 +6,7 @@ use sea_orm::ActiveModelTrait;
 use sea_orm::ColumnTrait;
 
 
-use crate::routes::handlers::dto_model::account_dto::{LoginModel, RegisterBeneficiaryModel, RegisterDonatorModel};
+use crate::routes::handlers::dto_model::account_dto::{LoginModel, Message, RegisterBeneficiaryModel, RegisterDonatorModel, Token};
 use crate::utils::app_state::AppState;
 use crate::utils::jwt::encode_jwt;
 
@@ -85,7 +85,7 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
 
     match register_credentials(&app_state, creds).await {
         Ok(_) =>{
-            return HttpResponse::BadRequest().body("Email Already Taken");
+            return HttpResponse::BadRequest().json("Email Already Taken");
         },
         Err(_) => {
             let nif_taken = entity::beneficiary::Entity::find().filter(
@@ -94,7 +94,7 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
              ).one(&app_state.db).await.unwrap();
         
             if nif_taken != None {
-                return HttpResponse::BadRequest().body("NIF Already Taken");
+                return HttpResponse::BadRequest().json("NIF Already Taken");
             }
 
 
@@ -146,11 +146,11 @@ pub async fn login(app_state: web::Data<AppState>, login_json: web::Json<LoginMo
             let token = encode_jwt(data.email, data.id, data.r_type).unwrap();
 
             return HttpResponse::Ok()
-                .json(format!(" 'token' : '{}'", token));
+                .json(Token{ token: token});
         },
 
         None => {
-            return HttpResponse::BadRequest().body("The credentials dont match");
+            return HttpResponse::BadRequest().json(Message{message: "Something went wrong".to_string()});
         }
     };
     
