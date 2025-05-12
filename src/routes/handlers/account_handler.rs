@@ -40,7 +40,7 @@ pub async fn register_donator(app_state: web::Data<AppState>, register_json: web
 
     match register_credentials(&app_state, cred).await{
         Ok(_) =>{
-            return HttpResponse::BadRequest().body("Email Already Taken");
+            return HttpResponse::BadRequest().json("Email Already Taken");
         },
         Err(_) => {
             
@@ -146,7 +146,7 @@ pub async fn login(app_state: web::Data<AppState>, login_json: web::Json<LoginMo
             let token = encode_jwt(data.email, data.id, data.r_type).unwrap();
 
             return HttpResponse::Ok()
-                .body(format!("token:{token}"));
+                .json(format!(" 'token' : '{}'", token));
         },
 
         None => {
