@@ -40,7 +40,7 @@ pub async fn register_donator(app_state: web::Data<AppState>, register_json: web
 
     match register_credentials(&app_state, cred).await{
         Ok(_) =>{
-            return HttpResponse::BadRequest().json("Email Already Taken");
+            return HttpResponse::BadRequest().json(Message{message: format!("Email Already Taken")});
         },
         Err(_) => {
             
@@ -85,7 +85,7 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
 
     match register_credentials(&app_state, creds).await {
         Ok(_) =>{
-            return HttpResponse::BadRequest().json("Email Already Taken");
+            return HttpResponse::BadRequest().json(Message{message: format!("Email Already Taken")});
         },
         Err(_) => {
             let nif_taken = entity::beneficiary::Entity::find().filter(
@@ -94,7 +94,7 @@ pub async fn register_beneficiary(app_state: web::Data<AppState>,register_json: 
              ).one(&app_state.db).await.unwrap();
         
             if nif_taken != None {
-                return HttpResponse::BadRequest().json("NIF Already Taken");
+                return HttpResponse::BadRequest().json(Message{message: format!("The NIF already exists")});
             }
 
 

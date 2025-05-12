@@ -3,6 +3,7 @@ use actix_web::{delete, get, post, web, HttpMessage, HttpRequest, HttpResponse};
 use entity::{aliments, donator};
 use sea_orm::{ActiveValue::Set, Condition, DeleteResult, EntityTrait, QueryFilter};
 use sea_orm::{ActiveModelTrait,ColumnTrait, ModelTrait};
+use crate::routes::handlers::dto_model::account_dto::Message;
 use crate::utils::{app_state::AppState, jwt::Claims};
 use super::dto_model::aliment_dto::Aliment;
 
@@ -15,15 +16,20 @@ async fn get_donator(id: i32,app_state: &web::Data<AppState>) -> Option<donator:
             Condition::all()
                 .add(entity::donator::Column::CredentialsId.eq(id))
     ).one(&app_state.db).await.unwrap();
-    donator
+    
+    return donator;
 }
 
 #[get("")]
 pub async fn index(req: HttpRequest, app_state: web::Data<AppState>) -> HttpResponse{
     let donator: Option<donator::Model> = get_donator(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
-    let results = donator.unwrap().find_related(aliments::Entity).all(&app_state.db).await.unwrap();
+    let results = donator.unwrap().find_related(aliments::Entity).all(&app_state.db).await;
 
-    return HttpResponse::Ok().json(results);
+    match results {
+        Ok(data) => return HttpResponse::Ok().json(data),
+        Err(_) => HttpResponse::Unauthorized().json(Message{message: format!("The beneficiary doesnt exists")}),
+    }
+    
 }
 
 #[post("")]
@@ -60,11 +66,11 @@ pub async fn show(req: HttpRequest, app_state: web::Data<AppState>, id: web::Pat
                 return HttpResponse::Ok()
                     .json(data);
             }else{
-                return HttpResponse::Unauthorized().body("The aliment doesnt belong to the authentificated user");
+                return HttpResponse::Unauthorized().json(Message{message: format!("The aliment doesnt belong to the authentificated user")});
             }
         },
         None => {
-            return HttpResponse::BadRequest().body("The aliment doesnt exist");
+            return HttpResponse::BadRequest().json(Message{message: format!("The aliment doesnt exist")});
         },
     }
     

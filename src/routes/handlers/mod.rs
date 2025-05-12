@@ -3,3 +3,4 @@ pub mod account_handler;
 pub mod aliment_handler;
 pub mod donation_handler;
 pub mod dto_model;
+pub mod profile_handler;

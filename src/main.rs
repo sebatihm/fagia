@@ -35,6 +35,8 @@ async fn main() -> std::io::Result<()> {
     Migrator::up(&db, None).await.unwrap();
     println!("[FAGIA]   The migrations were applied succesfully");
 
+    println!("[FAGIA]   Starting service on: http://{}:{}", address,port);
+
 
 
     HttpServer::new(move || {
@@ -52,8 +54,10 @@ async fn main() -> std::io::Result<()> {
             //Loading the routes (endpoints) and protecting them with autentification via JWT
             .service(web::scope("")
                 .wrap(from_fn(routes::middlewares::auth_middleware::check_auth_middleware))
+                .configure(routes::profile::config)
                 .configure(routes::aliments::config) 
                 .configure(routes::donation::config)
+                .configure(routes::beneficiary_donation::config)
             )
         
     })

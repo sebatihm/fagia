@@ -16,7 +16,7 @@ pub async fn check_auth_middleware( req: ServiceRequest, next: Next<impl Message
             .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
             .json("The User Must specify the JWT");
 
-        return Err(InternalError::from_response("Unauthorized", response).into());
+        return Err(InternalError::from_response("The User Must specify the JWT", response).into());
     }
 
     let token = auth.unwrap().to_str().unwrap().replace("Bearer ", "").to_owned();
@@ -30,14 +30,14 @@ pub async fn check_auth_middleware( req: ServiceRequest, next: Next<impl Message
                 .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
                 .json("The JTW already Expired");
 
-                return Err(InternalError::from_response("Unauthorized", response).into());
+                return Err(InternalError::from_response("The JTW already Expired", response).into());
 
             }else{
                 let response = HttpResponse::Unauthorized()
                 .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
                 .json("Unauthorized - The JWT is invalid");
             
-                return Err(InternalError::from_response("Unauthorized", response).into());
+                return Err(InternalError::from_response("Unauthorized - The JWT is invalid", response).into());
             }
         },
     }

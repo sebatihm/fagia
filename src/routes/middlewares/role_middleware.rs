@@ -15,7 +15,7 @@ pub async fn check_beneficiary( req: ServiceRequest, next: Next<impl MessageBody
             .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
             .json("The User Must specify the JWT");
 
-        return Err(InternalError::from_response("Unauthorized", response).into());
+        return Err(InternalError::from_response("The User Must specify the JWT", response).into());
     }
 
     if req.extensions().get::<Claims>().unwrap().role != String::from("Beneficiary"){
@@ -23,7 +23,7 @@ pub async fn check_beneficiary( req: ServiceRequest, next: Next<impl MessageBody
         .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
         .json("The User is not a Beneficiary");
 
-        return Err(InternalError::from_response("Unauthorized", response).into());
+        return Err(InternalError::from_response("The User is not a Beneficiary", response).into());
     }
     
     next.call(req).await
@@ -40,7 +40,7 @@ pub async fn check_donator( req: ServiceRequest, next: Next<impl MessageBody>) -
             .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
             .json("The User Must specify the JWT");
 
-        return Err(InternalError::from_response("Unauthorized", response).into());
+        return Err(InternalError::from_response("The User Must specify the JWT", response).into());
     }
 
     if req.extensions().get::<Claims>().unwrap().role != String::from("Donator"){
@@ -49,7 +49,7 @@ pub async fn check_donator( req: ServiceRequest, next: Next<impl MessageBody>) -
             .insert_header((header::ACCESS_CONTROL_ALLOW_ORIGIN, "*"))
             .json("The User is not a Donator");
 
-        return Err(InternalError::from_response("Unauthorized", response).into());
+        return Err(InternalError::from_response("The User is not a Donator", response).into());
     }
     
     next.call(req).await

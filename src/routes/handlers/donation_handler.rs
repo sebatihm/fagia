@@ -149,7 +149,10 @@ pub async fn donator_of_donation(req: HttpRequest ,app_state: web::Data<AppState
 
 #[get("/beneficiaries")]
 pub async fn get_beneficiaries(app_state: web::Data<AppState>) -> HttpResponse{
-    let beneficiaries = beneficiary::Entity::find().all(&app_state.db).await; 
+    let beneficiaries = beneficiary::Entity::find().filter(
+        Condition::all()
+            .add(entity::beneficiary::Column::CredentialsId.ne(0))
+    ) .all(&app_state.db).await;
 
     match beneficiaries {
         Ok(models) => return HttpResponse::Ok().json(models),
