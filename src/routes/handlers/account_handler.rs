@@ -155,3 +155,45 @@ pub async fn login(app_state: web::Data<AppState>, login_json: web::Json<LoginMo
     };
     
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{test, App};
+    use sea_orm::Database;
+    use serde_json::json;
+
+
+    #[actix_web::test]
+    async fn test_login_successful() {
+        let database_url = ("mysql://root:@localhost:3306/fagia".to_string()).clone();
+
+        let db = Database::connect( database_url).await.unwrap();
+
+
+        // Simula que existe un usuario en la base de datos (necesitas configurar un mock mejor)
+        let app_state = web::Data::new(AppState { db });
+
+        let login_payload = json!({
+            "email": "test@example.com",
+            "password": "password123"
+        });
+
+        let app = test::init_service(
+            App::new()
+                .app_data(app_state)
+                .service(login)
+        )
+        .await;
+
+        let req = test::TestRequest::post()
+            .uri("/login")
+            .set_json(&login_payload)
+            .to_request();
+
+        let resp = test::call_service(&app, req).await;
+
+        assert!(resp.status().is_client_error());
+    }
+}
