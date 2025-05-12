@@ -1,8 +1,40 @@
-use actix_web::{delete, web, HttpMessage, HttpRequest, HttpResponse};
-use sea_orm::{ActiveModelTrait, ActiveValue::Set, ConnectionTrait, DatabaseBackend, EntityTrait, ModelTrait, Statement};
+use actix_web::{delete, get, web, HttpMessage, HttpRequest, HttpResponse};
+use entity::{credentials};
+use sea_orm::{ConnectionTrait, DatabaseBackend, EntityTrait, ModelTrait, Statement};
 
-use crate::{routes::handlers::dto_model::account_dto::Message, utils::{app_state::AppState, jwt::Claims}};
+use crate::{routes::handlers::dto_model::{account_dto::Message, profile_dto::{BeneficiaryData, DonatorData}}, utils::{app_state::AppState, jwt::Claims}};
 
+async fn get_credentials(id: i32 ,app_state: &web::Data<AppState>)-> Option<credentials::Model>{
+    let credentials = credentials::Entity::find_by_id(id).one(&app_state.db).await.unwrap();
+    return credentials;
+
+}
+
+#[get("")]
+pub async fn info_account(req: HttpRequest, app_state: web::Data<AppState>) -> HttpResponse{
+    let account =get_credentials(req.extensions().get::<Claims>().unwrap().id, &app_state).await;
+
+    if account == None{
+        return HttpResponse::Unauthorized().json(Message{message: format!("Something went wrong")});
+    }
+
+    let beneficiary = account.clone().unwrap().find_related(entity::beneficiary::Entity).one(&app_state.db).await.unwrap();
+    let donator = account.clone().unwrap().find_related(entity::donator::Entity).one(&app_state.db).await.unwrap();
+
+
+    if beneficiary != None{
+        let beneficiary = beneficiary.unwrap();
+        return HttpResponse::Ok()
+            .json(BeneficiaryData{ creds: account.unwrap(), data: beneficiary });
+    } else if donator != None{
+        let donator = donator.unwrap();
+        return HttpResponse::Ok()
+            .json(DonatorData{ creds: account.unwrap(), data: donator });
+    }else {
+        return HttpResponse::BadRequest().json(Message{message: format!("Something went wrong")});
+    }
+
+}
 
 #[delete("")]
 pub async fn delete_account(req: HttpRequest, app_state: web::Data<AppState>) -> HttpResponse {
