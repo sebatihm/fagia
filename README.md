@@ -5,6 +5,10 @@
 - Crea un BD de nombre "fagia"
 - cargo run
 
+## Funcionamiento
+Se utilizaron la libreria de sea-orm para manejar la conexion a la base de datos, se conecta a una base de datos SQL llamada "fagia" y la de jsonwebtoken para manejar la autenticacion de usuarios.
+Una vez se tenga la instancia de la base de datos se iniciara.
+
 ![image](https://github.com/user-attachments/assets/2c77ef35-89e6-460d-a204-d124c32dd24b)
 
 
@@ -27,5 +31,5 @@
 - /donation                [POST]     Crear donaciones
 
 #### Proteccion de rol (Beneficiary)
-- /donation/filter/{DAYS} [GET]       Filtrar las donaciones por un numero {DAYS} de dias
-- /donation/{ID}/donator  [GET]       Obtener la informacion de un donador de una donacion en especifico
+- /beneficiary/donation/filter/{DAYS} [GET]       Filtrar las donaciones por un numero {DAYS} de dias
+- /beneficiary/donation/{ID}/donator  [GET]       Obtener la informacion de un donador de una donacion en especifico
