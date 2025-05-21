@@ -22,13 +22,13 @@ async fn main() -> std::io::Result<()> {
 
 
     //Getting the enviroment variables 
-    let address = (*utils::constants::ADDRESS).clone();
-    let port = (*utils::constants::PORT).clone();
-    let database_url = (*utils::constants::DATABASE_URL).clone();
+    // let address = (*utils::constants::ADDRESS).clone();
+    // let port = (*utils::constants::PORT).clone();
+    // let database_url = (*utils::constants::DATABASE_URL).clone();
 
 
     //Connecting to the database
-    let db = Database::connect(database_url).await.unwrap();
+    let db = Database::connect("mysql://root:root@db:3306/fagia".to_string()).await.unwrap();
     println!("[FAGIA]   The database connection was sucessfull");
 
     //Running migrations
@@ -61,7 +61,7 @@ async fn main() -> std::io::Result<()> {
             )
         
     })
-    .bind((address, port))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }

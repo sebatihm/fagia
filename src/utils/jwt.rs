@@ -2,8 +2,6 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation};
 use serde::{Deserialize, Serialize};
 
-use super::constants;
-
 #[derive(Serialize, Deserialize)]
 pub struct Claims{
     pub exp: usize,
@@ -12,6 +10,9 @@ pub struct Claims{
     pub id: i32,
     pub role: String
 }
+
+const SECRET_KEY: &str = "FAGIA_1234567890";
+
 
 pub fn encode_jwt(email: String, id:i32, rol: entity::sea_orm_active_enums::RType) -> Result<String, jsonwebtoken::errors::Error>{
     let now = Utc::now();
@@ -31,18 +32,21 @@ pub fn encode_jwt(email: String, id:i32, rol: entity::sea_orm_active_enums::RTyp
         role
     };
 
-    let secret = (*constants::SECRET).clone();
+    let key = EncodingKey::from_secret(SECRET_KEY.as_bytes());
 
-    encode(&Header::default(), &claims, &EncodingKey::from_secret(secret.as_ref()))
+
+    encode(&Header::default(), &claims, &key)
 
     
 }
 
 pub fn decode_jwt(jwt: String) -> Result<TokenData<Claims>,jsonwebtoken::errors::Error> {
-    let secret = (*constants::SECRET).clone();
+    let key = DecodingKey::from_secret(SECRET_KEY.as_bytes()); 
+
+
     let claim_data: Result<TokenData<Claims>, jsonwebtoken::errors::Error> = decode(
         &jwt, 
-        &DecodingKey::from_secret(secret.as_ref()), 
+        &key, 
         &Validation::default()
     );
 
