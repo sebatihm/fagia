@@ -35,7 +35,7 @@ async fn main() -> std::io::Result<()> {
     Migrator::up(&db, None).await.unwrap();
     println!("[FAGIA]   The migrations were applied succesfully");
 
-    println!("[FAGIA]   Starting service on: http://{}:{}", address,port);
+    println!("[FAGIA]   Starting service on: http://0.0.0.0:8080");
 
 
 

@@ -1,0 +1,36 @@
+# # Use root/example as user/password credentials
+# version: '3.1'
+
+# services:
+
+#   db:
+#     image: mysql
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: root
+#     # (this is just an example, not intended to be a production configuration)
+
+
+version: '3.8'
+services:
+  db:
+    image: mysql:latest
+    container_name: db
+    networks:
+      - mi-red
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fagia
+
+  fagia-app:
+    image: sebatihm/fagia-app:latest
+    container_name: fagia-app
+    networks:
+      - mi-red
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+networks:
+  mi-red:
