@@ -1,7 +1,7 @@
 use actix_web::{post, web, HttpMessage, HttpRequest, HttpResponse,get};
 use entity::{beneficiary, credentials, donation, donator};
 use sea_orm::{ActiveValue::Set, EntityTrait};
-use sea_orm::{ActiveModelTrait, Condition, ModelTrait, QueryFilter};
+use sea_orm::{ActiveModelTrait, Condition, JoinType, ModelTrait, QueryFilter, QuerySelect,RelationTrait};
 use sea_orm::ColumnTrait;
 
 use crate::routes::handlers::dto_model::account_dto::Message;
@@ -149,13 +149,18 @@ pub async fn donator_of_donation(req: HttpRequest ,app_state: web::Data<AppState
 
 #[get("/beneficiaries")]
 pub async fn get_beneficiaries(app_state: web::Data<AppState>) -> HttpResponse{
-    let beneficiaries = beneficiary::Entity::find().filter(
-        Condition::all()
-            .add(entity::beneficiary::Column::CredentialsId.ne(0))
-    ) .all(&app_state.db).await;
+
+    let beneficiaries = beneficiary::Entity::find()
+        .join(
+            JoinType::InnerJoin, 
+            entity::beneficiary::Relation::Credentials.def()
+        ).all(&app_state.db)
+        .await;
 
     match beneficiaries {
-        Ok(models) => return HttpResponse::Ok().json(models),
+        Ok(models) => { 
+            return HttpResponse::Ok().json(models)
+        },
         Err(_) => return HttpResponse::InternalServerError().json(Message{message: "Something went wrong".to_string()}),
     }
 

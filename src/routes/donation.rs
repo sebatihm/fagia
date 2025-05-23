@@ -4,7 +4,9 @@ use super::{handlers, middlewares::role_middleware};
 
 
 pub fn config(config: &mut web::ServiceConfig) {
-    config.service(
+    config
+        .service(handlers::donation_handler::get_beneficiaries)
+        .service(
         web::scope("/donation")
             .service(handlers::donation_handler::index) // No protegido por roles
             .service(
