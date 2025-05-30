@@ -167,7 +167,7 @@ mod tests {
 
     #[actix_web::test]
     async fn test_login_successful() {
-        let database_url = ("mysql://root:@localhost:3306/fagia".to_string()).clone();
+        let database_url = ("mysql://root:root@db:3306/fagia".to_string()).clone();
 
         let db = Database::connect( database_url).await.unwrap();
 
