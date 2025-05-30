@@ -1,3 +1,10 @@
+[workspace]
+members = [
+    ".",            
+    "migration",    
+    "entity"        
+]
+
 [package]
 name = "FAGIA"
 version = "0.1.0"
