@@ -1,0 +1,26 @@
+services:
+  db:
+    image: mysql:8
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fagia
+    ports:
+      - "3306:3306"
+    networks:
+      - rustnet
+
+  jenkins:
+    image: sebatihm/jenkins-with-rust:latest
+    container_name: rust-kins
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    networks:
+      - rustnet
+
+networks:
+  rustnet:
