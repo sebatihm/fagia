@@ -22,12 +22,14 @@ pipeline {
                 script {
                     // Construir el proyecto con cargo
                     
-                    sh 'echo ::::::::::::::::::Migraciones::::::::::::::::::::::::::'
-                    sh 'cargo install sea-orm-cli@1.1.0'
-                    sh 'cargo run -p migration fresh'
+                    
                     
                     
                     sh 'cargo build --release'
+                    
+                    sh 'echo ::::::::::::::::::Migraciones::::::::::::::::::::::::::'
+                    sh 'cargo install sea-orm-cli@1.1.0'
+                    sh 'cargo run -p migration fresh'
                 }
             }
         }
