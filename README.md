@@ -41,12 +41,14 @@ Una vez se tenga la instancia de la base de datos se iniciara el servicio http.
 ### Proteccion de rutas autenticadas
 - /donation                [GET]      Ver las donaciones donde participa el usuario (index)
 - /beneficiaries           [GET]      Ver los beneficiarios con cuenta activa (con credenciales)
+- /account                 [GET]      Obtener la informacion de un usuario
+- /account                  [DELETE]  Eliminar la cuenta autenticada
 
 #### Proteccion de rol (Donator)
 - /aliments                [GET]      Ver los alimentos del donador
 - /aliments                [POST]     Registrar alimentos del donador
 - /aliments/{ID}           [POST]     Mostrar un alimento con {ID} del donador
-- /aliments/{ID}           [DELETE]   Mostrar un alimento con {ID} del donador
+- /aliments/{ID}           [DELETE]   Eliminar un alimento con {ID} del donador
 - /donation                [POST]     Crear donaciones
 
 #### Proteccion de rol (Beneficiary)
