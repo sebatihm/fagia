@@ -1,64 +1,130 @@
-# Fagia BackEnd
+# Jenkins
 
-Fagia es una iniciativa que busca apoyar a instituciones benéficas a contactar con
-donadores de alimentos de una manera rápida y sencilla, utilizando un API Rest
-para manejar las cantidades de alimentos donados, la información de las
-organizaciones y la de los donadores.
+Esta rama esta dedicada a la funcionalidades de jenkins, simplemente en esta esta el Jenkinsfile el cual realiza el git clone a esta rama, las pruebas y en dado caso que se descomente la 
+etapa (ests simula el despliegue como se vio en clase).
 
-Se busca evitar el desperdicio de comida por parte de personas de la comunidad
-(principalmente restaurantes o supermercados que desechan alimentos todos los
-días) mediante la API de Fagia, permitiendo redireccionar los recursos para que
-sean aprovechados por instituciones caritativas.
+```
+pipeline {
+    agent any
 
-## Requerimientos de instalación
-- Rust version mas reciente [2025] (1.27.1 rustup)
-- Instala sea orm mediante cargo
-  `cargo install sea-orm-cli@1.1.0`
-- Levanta un servicio de SQL
-- Crea un BD de nombre "fagia"
-- Añade el archivo .env con las siguientes variables de entorno
-  - ADDRESS: Dirrecion ip donde se ejecutara el servicio (se recomienda 127.0.0.1 ó localhost)
-  - PORT: Puerto en el que se ejecutara el servicio http
-  - SECRET : Cualquier cadena
-  - DATABASE_URL : mysql://user:password@host:puerto/nombre_bd
-- Ejecuta el codigo `cargo run`
+    environment {
+        ADDRESS = 'localhost'
+        PORT = '8081'
+        DATABASE_URL = 'mysql://root:root@db:3306/fagia'
+        SECRET = 'mysecretkey'
+    }
 
-## Funcionamiento
-Se utilizaron la libreria de sea-orm para manejar la conexion a la base de datos, se conecta a una base de datos SQL llamada "fagia" esto mediante un orm para manejar los modelos de manera efectiva y la libreria jsonwebtoken para manejar la autenticacion de usuarios mediante jwt.
-Una vez se tenga la instancia de la base de datos se iniciara el servicio http.
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git branch: 'jenkins', url: 'https://github.com/sebatihm/fagia.git'
+                }
+            }
+        }
 
-![image](https://yt3.ggpht.com/SQAFFsDQULtOKNB4Qs1zDmpsoe5EYFT_YTrB-Ks3gLo6fSdhSWy7X6WsB2wuafZOc2F1E7Eeu8XDdA=s498-nd-v1)
+        stage('Build') {
+            steps {
+                script {
+                    // Construir el proyecto con cargo
+                    
+                    
+                    
+                    
+                    sh 'cargo build --release'
+                    
+                    sh 'echo ::::::::::::::::::Migraciones::::::::::::::::::::::::::'
+                    sh 'cargo install sea-orm-cli@1.1.0'
+                    sh 'cargo run -p migration fresh'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Ejecutar las pruebas con cargo
+                    sh 'cargo test'
+                }
+            }
+        }
+
+        // stage('Run') {
+        //     steps {
+        //         script {
+        //             // Ejecutar el proyecto con cargo
+        //             sh 'cargo run'
+        //         }
+        //     }
+        // }
+    }
+}
+```
 
 
-## Rutas (Endpoints)
-![image](https://github.com/user-attachments/assets/496df8e1-9199-48a6-9b5a-1b3667bfe7e2)
+## Docker y jenkins
+La verdad investigue un cliente de docker el cual pudiera levantar un servicio de jenkins y como no encontre alguna imagen con Rust instalado, lo que hice fue crear una imagen de
+jenkins con rust, en este dockerfile usando de platilla la imagen mas reciente de jenkins, instalo las dependencias que necesita rust para funcionar y despues al cambiarme al usuario
+jenkins para que me deje usar cargo (compilador de rust) instalo rust y despues compruebo que funciona la instalación de rust.
+```
+FROM jenkins/jenkins:lts
 
-### Sin proteccion de rutas
-- /login                    [POST]    Logueo
-- /register-donator         [POST]    Registro de donadores
-- /register-beneficiary     [POST]    Registro de beneficiarios
+USER root
 
-### Proteccion de rutas autenticadas
-- /donation                [GET]      Ver las donaciones donde participa el usuario (index)
-- /beneficiaries           [GET]      Ver los beneficiarios con cuenta activa (con credenciales)
+# Dependencias necesarias para compilar
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libpq-dev \
+    libmariadb-dev \
+    ca-certificates \
+    git \
+    && apt-get clean
 
-#### Proteccion de rol (Donator)
-- /aliments                [GET]      Ver los alimentos del donador
-- /aliments                [POST]     Registrar alimentos del donador
-- /aliments/{ID}           [POST]     Mostrar un alimento con {ID} del donador
-- /aliments/{ID}           [DELETE]   Mostrar un alimento con {ID} del donador
-- /donation                [POST]     Crear donaciones
+# Cambiar a usuario jenkins
+USER jenkins
+ENV USER=jenkins
 
-#### Proteccion de rol (Beneficiary)
-- /beneficiary/donation/filter/{DAYS} [GET]       Filtrar las donaciones por un numero {DAYS} de dias
-- /beneficiary/donation/{ID}/donator  [GET]       Obtener la informacion de un donador de una donacion en especifico
+# Instalar Rust como usuario jenkins
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
+# Añadir Cargo y Rust al PATH del usuario jenkins
+ENV PATH="/var/jenkins_home/.cargo/bin:$PATH"
 
-## Dockerizacion
-Para saber mas acerca de la dockerización de este proyecto se recomienda cambiar a la rama docker para su debida explicación. 
-
-![image](https://github.com/user-attachments/assets/f040e253-3f6f-4f63-8aa8-9348fd700f75)
+# Verificar instalación
+RUN rustc --version && cargo --version
+```
 
 
 
-[Rama Docker](https://github.com/sebatihm/fagia/tree/docker)
+El docker compose se encarga de levantar un servicio de jenkins y una base de datos relacional, que se necesita para que funcione la api rest.
+```
+services:
+  db:
+    image: mysql:8
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fagia
+    ports:
+      - "3306:3306"
+    networks:
+      - rustnet
+
+  jenkins:
+    image: sebatihm/jenkins-with-rust:latest
+    container_name: rust-kins
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    networks:
+      - rustnet
+
+networks:
+  rustnet:
+```
